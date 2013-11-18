@@ -5,7 +5,7 @@ curl -XDELETE 'http://127.0.0.1:9200/test-index?pretty=true'
 # [2013-07-13T16:46:00.371055]
 curl -XHEAD 'http://127.0.0.1:9200/test-index?pretty=true'
 # [2013-07-13T16:46:00.372258]
-curl -XPUT 'http://127.0.0.1:9200/test-index?pretty=true' -d '{"mappings": {}, "settings": {"index.number_of_replicas": 1, "index.number_of_shards": 5}}'
+curl -XPUT 'http://127.0.0.1:9200/test-index?pretty=true' -d '{"mappings": {"test-type": {"properties": {"name": {"index": "analyzed", "term_vector": "with_positions_offsets", "boost": 1.0, "store": "yes", "type": "string"}, "title": {"index": "analyzed", "term_vector": "with_positions_offsets", "boost": 1.0, "store": "yes", "type": "string"}, "parsedtext": {"index": "analyzed", "term_vector": "with_positions_offsets", "boost": 1.0, "store": "yes", "type": "string"}, "tag": {"type": "string", "store": "yes"}, "date": {"type": "date", "store": "yes"}, "position": {"type": "geo_point", "store": "yes"}, "uuid": {"index": "not_analyzed", "boost": 1.0, "store": "yes", "type": "string"}}}}, "settings": {"index.number_of_replicas": 1, "index.number_of_shards": 5}}'
 # [2013-07-13T16:46:00.461778]
 curl -XPOST 'http://127.0.0.1:9200/test-index/_refresh?pretty=true'
 # [2013-07-13T16:46:01.463973]
