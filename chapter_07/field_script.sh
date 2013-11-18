@@ -7,9 +7,9 @@ curl -XGET 'http://127.0.0.1:9200/test-index/test-type/_search?&pretty=true&size
             "script" : "doc[\"name\"].value + \" -- \" + doc[\"description\"].value"
         },
         "my_calc_field2" : {
-            "script" : "doc[\"age\"].value * factor",
+            "script" : "doc[\"price\"].value * discount",
             "params" : {
-                "factor"  : 2.0
+                "discount"  : 0.8
             }
         }
     }

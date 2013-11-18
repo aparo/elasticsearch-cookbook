@@ -4,7 +4,7 @@ curl -XGET 'http://127.0.0.1:9200/test-index/test-type/_search?&pretty=true&size
     },
     "sort": {
         "_script" : {
-            "script" : "doc[\"age\"].value * factor",
+            "script" : "doc[\"price\"].value * factor",
             "type" : "number",
             "ignore_unmapped" : true,
             "params" : {
