@@ -6,6 +6,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.script.ScriptService;
 
 import java.io.IOException;
 
@@ -41,7 +42,7 @@ public class DocumentOperations {
         GetResponse gr=client.prepareGet(index, type, "2").execute().actionGet();
         System.out.println("Version: "+gr.getVersion());
 
-        UpdateResponse ur = client.prepareUpdate(index, type, "2").setScript("ctx._source.text = 'v2'").execute().actionGet();
+        UpdateResponse ur = client.prepareUpdate(index, type, "2").setScript("ctx._source.text = 'v2'", ScriptService.ScriptType.INLINE).execute().actionGet();
         System.out.println("Version: "+ur.getVersion());
 
         DeleteResponse dr = client.prepareDelete(index, type, "2").execute().actionGet();

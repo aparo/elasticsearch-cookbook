@@ -3,6 +3,7 @@ package com.packtpub;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.script.ScriptService;
 
 import java.io.IOException;
 
@@ -42,7 +43,7 @@ public class BulkOperations {
 
         bulker=client.prepareBulk();
         for (Integer i=1; i<=1000; i++){
-            bulker.add(client.prepareUpdate(index, type, i.toString()).setScript("ctx._source.text += 2"));
+            bulker.add(client.prepareUpdate(index, type, i.toString()).setScript("ctx._source.text += 2", ScriptService.ScriptType.INLINE));
         }
         System.out.println("Number of actions for udpate: " + bulker.numberOfActions());
         bulker.execute().actionGet();

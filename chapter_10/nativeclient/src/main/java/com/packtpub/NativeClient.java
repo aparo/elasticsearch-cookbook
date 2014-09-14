@@ -15,7 +15,7 @@ public class NativeClient {
     public static Client createTransportClient() {
         final Settings settings = ImmutableSettings.settingsBuilder()
                 .put("client.transport.sniff", true)
-                .put("cluster.name", "elasticsearch").build();
+                .put("cluster.name", "escookbook").build();
 
         return new TransportClient(settings)
                 .addTransportAddress(new InetSocketTransportAddress("127.0.0.1", 9300));
