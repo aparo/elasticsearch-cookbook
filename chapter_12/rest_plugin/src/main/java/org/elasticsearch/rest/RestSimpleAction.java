@@ -14,7 +14,6 @@ import static org.elasticsearch.rest.RestRequest.Method.GET;
 import static org.elasticsearch.rest.RestRequest.Method.POST;
 import static org.elasticsearch.rest.RestStatus.OK;
 import static org.elasticsearch.rest.action.support.RestActions.buildBroadcastShardsHeader;
-import org.elasticsearch.rest.action.support.RestXContentBuilder;
 
 
 public class RestSimpleAction extends BaseRestHandler {
@@ -28,22 +27,24 @@ public class RestSimpleAction extends BaseRestHandler {
         controller.registerHandler(GET, "/{index}/_simple", this);
         controller.registerHandler(GET, "/_simple/{field}", this);
     }
+
     @Override
-    public void handleRequest(final RestRequest request, final RestChannel channel) {
+    protected void handleRequest(final RestRequest request, final  RestChannel channel, final  Client client) throws Exception {
         final SimpleRequest simpleRequest = new SimpleRequest(Strings.splitStringByCommaToArray(request.param("index")));
         simpleRequest.setField(request.param("field"));
         client.execute(SimpleAction.INSTANCE, simpleRequest, new ActionListener<SimpleResponse>() {
 
+
             @Override
             public void onResponse(SimpleResponse response) {
                 try {
-                    XContentBuilder builder = RestXContentBuilder.restContentBuilder(request);
+                    XContentBuilder builder = channel.newBuilder();
                     builder.startObject();
                     builder.field("ok", true);
                     buildBroadcastShardsHeader(builder, response);
                     builder.array("terms", response.getSimple().toArray());
                     builder.endObject();
-                    channel.sendResponse(new XContentRestResponse(request, OK, builder));
+                    channel.sendResponse(new BytesRestResponse(OK, builder));
                 } catch (Exception e) {
                     onFailure(e);
                 }
@@ -52,11 +53,12 @@ public class RestSimpleAction extends BaseRestHandler {
             @Override
             public void onFailure(Throwable e) {
                 try {
-                    channel.sendResponse(new XContentThrowableRestResponse(request, e));
+                    channel.sendResponse(new BytesRestResponse(channel, e));
                 } catch (IOException e1) {
                     logger.error("Failed to send failure response", e1);
                 }
             }
         });
     }
+
 }

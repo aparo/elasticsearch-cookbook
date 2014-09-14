@@ -18,19 +18,11 @@
  */
 package org.elasticsearch.action.simple;
 
-import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
-import org.apache.lucene.index.Fields;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.index.Terms;
-import org.apache.lucene.index.TermsEnum;
-import org.apache.lucene.util.BytesRef;
-import org.elasticsearch.ElasticSearchException;
 import org.elasticsearch.action.ShardOperationFailedException;
 import org.elasticsearch.action.support.DefaultShardOperationFailedException;
 import org.elasticsearch.action.support.broadcast.BroadcastShardOperationFailedException;
@@ -46,7 +38,6 @@ import static org.elasticsearch.common.collect.Lists.newArrayList;
 
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.engine.Engine;
 import org.elasticsearch.index.shard.service.InternalIndexShard;
 import org.elasticsearch.indices.IndicesService;
 import org.elasticsearch.threadpool.ThreadPool;
@@ -64,18 +55,14 @@ public class TransportSimpleAction
     @Inject
     public TransportSimpleAction(Settings settings, ThreadPool threadPool, ClusterService clusterService,
                                  TransportService transportService, IndicesService indicesService) {
-        super(settings, threadPool, clusterService, transportService);
+        super(settings, SimpleAction.NAME, threadPool, clusterService, transportService);
         this.indicesService = indicesService;
     }
+
 
     @Override
     protected String executor() {
         return ThreadPool.Names.MERGE;
-    }
-
-    @Override
-    protected String transportAction() {
-        return SimpleAction.NAME;
     }
 
     @Override
@@ -115,10 +102,12 @@ public class TransportSimpleAction
         return new ShardSimpleRequest();
     }
 
+
     @Override
-    protected ShardSimpleRequest newShardRequest(ShardRouting shard, SimpleRequest request) {
+    protected ShardSimpleRequest newShardRequest(int numShards, ShardRouting shard, SimpleRequest request) {
         return new ShardSimpleRequest(shard.index(), shard.id(), request);
     }
+
 
     @Override
     protected ShardSimpleResponse newShardResponse() {
@@ -126,7 +115,7 @@ public class TransportSimpleAction
     }
 
     @Override
-    protected ShardSimpleResponse shardOperation(ShardSimpleRequest request) throws ElasticSearchException {
+    protected ShardSimpleResponse shardOperation(ShardSimpleRequest request) {
         synchronized (simpleMutex) {
             InternalIndexShard indexShard = (InternalIndexShard) indicesService.indexServiceSafe(request.index()).shardSafe(request.shardId());
             indexShard.store().directory();

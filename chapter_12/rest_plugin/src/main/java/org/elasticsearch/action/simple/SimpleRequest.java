@@ -2,7 +2,6 @@ package org.elasticsearch.action.simple;
 
 import java.io.IOException;
 import org.elasticsearch.action.support.broadcast.BroadcastOperationRequest;
-import org.elasticsearch.action.support.broadcast.BroadcastOperationThreading;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
 
@@ -10,12 +9,10 @@ public class SimpleRequest extends BroadcastOperationRequest<SimpleRequest> {
 
     private String field;
     
-    SimpleRequest() {
-    }
+    SimpleRequest() {}
     
     public SimpleRequest(String... indices) {
         super(indices);
-        operationThreading(BroadcastOperationThreading.THREAD_PER_SHARD);
     }
     
     public void setField(String field) {
